@@ -1,0 +1,14 @@
+sis:
+  login_name:
+  password:
+
+xmpp:
+  bot_id:
+  bot_password:
+  reseivers: ['']
+
+general:
+  verbose: false
+
+database:
+  hashes: "/home/foobaz/markify/hashes.txt"
