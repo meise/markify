@@ -1,26 +1,213 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 
+# gems
 require 'mechanize'
-require 'date'
 require 'xmpp4r/client'
+# stdlib
+require 'pathname'
+require 'date'
 require 'digest'
+require 'optparse'
+require 'yaml'
 
-@debug = false
-@marks = []
+class Markify
 
-agent = Mechanize.new
+  VERSION = '0.0.1'
+  NAME    = 'markify'
 
-agent.get('https://dias.fh-bonn-rhein-sieg.de/d3/SISEgo.asp?UserAcc=Gast&DokID=DiasSWeb&ADias2Dction=Login') do |page|
-  page_after_login = page.form_with(action: '/d3/SISEgo.asp?formact=Login') do |f|
-    f.txtBName    = "fbar2s"
-    f.txtKennwort = "möpmöp"
-  end.click_button
+  DESCRIPTION =<<DESCRIPTION
+#{Markify::NAME.capitalize} is ruby Script to detect new marks in the
+Studierendeninformationssystem (SIS) of the University of Applied Sciences
+Bonn-Rhein-Sieg. If #{Markify::NAME} detects new marks, they will send you a xmpp
+message for every change.
+DESCRIPTION
 
-  if link = page_after_login.link_with(text: "Notenspiegel (vollständig)")
-    mark_page   = link.click
-    marks_table = mark_page.search(".//*[@id='inhalt']/table/tbody/tr/td/center/table/tr")
+  LICENCE =<<LICENCE
+#{Markify} - v#{Markify::VERSION}
+Released under the GNU GENERAL PUBLIC LICENSE Version 3. © Daniel Meißner, 2013
+LICENCE
 
+  attr_reader :config, :options
+
+  def initialize
+    @options      = Markify::OptParser.parse!
+    @config       = Markify::Settings.load!(options[:config_file])
+    mark_database = Markify::Database.new
+
+    all_marks = Markify::Scraper.new(@config['sis']['login_name'], @config['sis']['login_password']).marks
+    new_marks = mark_database.check_for_new_marks(all_marks)
+
+    if new_marks.count == 0 && (@config['general']['verbose'] || @options[:noop])
+      puts "No new marks."
+      exit
+    end
+
+    bot = Markify::Bot.new(@config['xmpp']['bot_id'], @config['xmpp']['bot_password']) unless @options[:noop]
+
+    new_marks.sort_by{|mark| mark.date}.each do |mark|
+      unless @options[:noop]
+        bot.send_message(@config['xmpp']['recipients'], mark.to_s)
+        mark_database.write_checksum(mark.hash)
+      end
+
+      puts mark.to_s if @config['general']['verbose'] || @options[:verbose]
+    end
+  end
+end
+
+module Markify::Settings
+
+  DEFAULT_CONFIG_PATH = Pathname(ENV['HOME'] + "/markify/config.yml")
+
+  attr_reader :config
+
+  def self.load!(file = nil)
+    config_file = file || DEFAULT_CONFIG_PATH
+
+    if config_file.exist?
+      YAML::load_file(config_file)
+    else
+      puts 'Config file does not exist. Please create it.'
+      puts "  $ #{$0} --init"
+      exit
+    end
+  end
+
+  def self.create_example_config(file = nil)
+    config_file = file || DEFAULT_CONFIG_PATH
+
+    if config_file.exist?
+      puts "Configuration file #{config_file} already exists."
+      exit
+    else
+      Dir.mkdir(config_file.dirname) unless config_file.dirname.exist?
+
+      File.open(config_file, 'a+', 0600) do |file|
+        file.puts <<CONTENT
+sis:
+  login_name: "foobaz2s"
+  login_password: "fnord2000"
+
+xmpp:
+  bot_id: "bot@foo.baz.er"
+  bot_password: "möpmöp"
+
+  recipients: bla@jabber.foo.baz, müp@möp.blap.ba
+
+general:
+  verbose: false
+
+database:
+  hashes: "#{ENV['HOME'] + '/markify/hashes.txt'}"
+CONTENT
+      end
+
+      puts "#{config_file} created."
+
+      exit
+    end
+  end
+end
+
+module Markify::OptParser
+
+  def self.parse!
+    parse
+  end
+
+  protected
+
+  def self.parse
+    options = {}
+
+    oparser = OptionParser.new do |opts|
+      opts.banner = "Usage: #{$0} [options]"
+
+      opts.separator ""
+      opts.separator "Optional options:"
+
+      opts.on("-f", "--config-file FILE", "Config file (default: ~/markify/config.yml)") do |file|
+        options[:config_file] = Pathname(file)
+      end
+
+      opts.on('-n', '--noop', 'No operation, only stout output') do |n|
+        options[:noop] = n
+      end
+
+      opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
+        options[:verbose] = v
+      end
+
+      opts.separator ''
+      opts.separator 'Common options:'
+
+      opts.on_tail('--init', 'Create example configuration') do
+        if options[:config_file]
+          Markify::Settings.create_exmple_config(options[:config_file])
+        else
+          Markify::Settings.create_example_config
+        end
+      end
+
+      opts.on_tail('--version', 'Show version inforamtion') do
+        puts Markify::LICENCE
+        exit
+      end
+
+      opts.on_tail('-h', '--help', 'Show this message') do
+        puts opts
+        exit
+      end
+
+      if ARGV.size == 0
+        puts Markify::DESCRIPTION
+        puts
+        puts opts
+        puts
+        puts Markify::LICENCE
+
+        exit
+      end
+    end.parse!
+
+    options
+  end
+end
+
+class Markify::Scraper
+
+  attr_reader :marks
+
+  def initialize(login_name, login_password, sis_login_page = nil)
+    @agent = Mechanize.new
+
+    @sis                  = {}
+    @sis[:login_page]     = sis_login_page || 'https://dias.fh-bonn-rhein-sieg.de/d3/SISEgo.asp?UserAcc=Gast&DokID=DiasSWeb&ADias2Dction=Login'
+    @sis[:login_name]     = login_name
+    @sis[:login_password] = login_password
+
+    @marks = []
+
+    scrape
+  end
+
+  def scrape
+    scrape!
+  end
+
+  protected
+
+  def scrape!
+    page = @agent.get(@sis[:login_page])
+
+    first_sis_page = sis_login(@sis[:login_name], @sis[:login_password], page)
+    marks_table    = get_marks_table(first_sis_page)
+
+    get_marks(marks_table)
+  end
+
+  def get_marks(marks_table)
     marks_table.each do |m|
       mark = m.search('./td')
 
@@ -28,63 +215,133 @@ agent.get('https://dias.fh-bonn-rhein-sieg.de/d3/SISEgo.asp?UserAcc=Gast&DokID=D
         next
       end
 
-      @marks << { id: (Digest::SHA256.new << "#{mark[1].text}#{mark[12].text}#{mark[4].text}#{mark[8].text}#{mark[7].text}").to_s, name: mark[1].text, date: Date.strptime(mark[12].text, '%d.%m.%Y'), mark: mark[4].text, try: mark[8].text, passed: mark[7].text }
+      @marks << Markify::Mark.new(mark[1].text, mark[0].text, mark[4].text, mark[7].text, mark[8].text, mark[12].text)
     end
+
+    @marks
+  end
+
+  def get_marks_table(page_after_login)
+    marks_table = nil
+
+    if link = page_after_login.link_with(text: "Notenspiegel (vollständig)")
+      mark_page   = link.click
+      marks_table = mark_page.search(".//*[@id='inhalt']/table/tbody/tr/td/center/table/tr")
+    else
+      puts "Page after login not available."
+      exit
+    end
+
+    marks_table
+  end
+
+  def sis_login(name, password, login_page)
+    page_after_login = login_page.form_with(action: '/d3/SISEgo.asp?formact=Login') do |form|
+      form.txtBName    = name
+      form.txtKennwort = password
+    end.click_button
   end
 end
 
-@marks.each{|mark| p mark} if @debug
+class Markify::Mark
 
-def check_new_marks
-  new_marks = @marks.clone
+  attr_reader :name, :id, :date, :mark, :passed, :try, :hash
 
-  File.open(Dir.pwd + "/marks.txt", 'a+').read.split(/\n/).each do |line|
-    @marks.each do |mark|
-      if mark[:id].match(line)
-        new_marks.delete(mark)
-      end
-    end
+  def initialize(name, id, mark, passed, try, date)
+    @name   = name
+    @id     = id.to_i
+    @mark   = mark.to_i
+    @passed = passed
+    @try    = try.to_i
+    @date   = Date.strptime(date, '%d.%m.%Y')
+    @hash   = self.to_sha256.to_s
   end
 
-  return new_marks
-end
-
-def send_xmpp_message(new_marks)
-  bot = Jabber::Client.new('bot@jab.ber.de/bot')
-  bot.connect
-  bot.auth('müpmüp')
-
-  receiver = "foo@baz.er"
-
-  puts "\nNew marks found: " if @debug && new_marks.count > 0
-
-  new_marks.sort_by{|mark| mark[:date]}.each do |mark|
+  def to_s
     message =<<MESSAGE
+exam:   #{@name}
+mark:   #{@mark}
+passed: #{@passed}
+try:    #{@try}
+date:   #{@date}
 
-== New mark available ==
-
-exam: #{mark[:name]}
-mark: #{mark[:mark]}
-passed: #{mark[:passed]}
-try: #{mark[:try]}
-date: #{mark[:date]}
+hash:   #{@hash}
 
 MESSAGE
+  end
 
-    if @debug
-      puts mark[:id]
-      puts mark[:name]
-      puts mark[:mark]
-      puts mark[:passed]
-      puts
-    else
-      bot.send(Jabber::Message.new(receiver, message)) unless mark[:passed] =~ /AN/
-    end
+  def to_sha256
+    Digest::SHA256.new << "#{@name}#{@id}#{@date}#{@mark}#{@try}#{@passed}"
+  end
+end
 
-    File.open(Dir.pwd + "/marks.txt", 'a+') do |f|
-      f.puts mark[:id]
+class Bot
+  def initialize(bot_id, bot_password)
+    @client = Jabber::Client.new(bot_id)
+
+    @client.connect
+    @client.auth(bot_password)
+  end
+
+  def send_message(receiver, message)
+    receiver.each do |r|
+      @client.send(Jabber::Message.new(r, message))
     end
   end
 end
 
-send_xmpp_message(check_new_marks)
+class Markify::Database
+
+  attr_reader = :checksums, :path
+
+  def initialize(path = nil)
+    @file_path = path || Pathname(ENV['HOME'] + '/markify/hashes.txt')
+    @checksums = read_checksums
+  end
+
+  def check_for_new_marks(marks)
+    new_marks = marks.clone
+
+    read_checksums.each do |line|
+      marks.each do |mark|
+        if mark.hash.match(line)
+          new_marks.delete(mark)
+        end
+      end
+    end
+
+    new_marks
+  end
+
+  def write_checksum(checksum)
+    File.open(@file_path, 'a+') do |file|
+      file.puts checksum
+    end
+  end
+
+  protected
+
+  def create_checksum_file
+    unless @file_path.dirname.exist?
+      @file_path.dirname.mkdir
+    end
+
+    File.open(@file_path, 'a+') do |file|
+      file.puts "# markify hash database"
+    end
+  end
+
+  def read_checksums
+    hashes = []
+
+    if @file_path.exist?
+      hashes = File.open(@file_path, 'r').read.split(/\n/)
+    else
+      create_checksum_file
+    end
+
+    hashes
+  end
+end
+
+Markify.new
