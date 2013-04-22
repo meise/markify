@@ -1,3 +1,13 @@
 #!/usr/bin/env ruby
 
+begin
+  require 'markify'
+rescue LoadError
+  if File.symlink? __FILE__
+    require File.dirname(File.readlink(__FILE__)) + '/../lib/markify'
+  else
+    require File.dirname(__FILE__) + '/../lib/markify'
+  end
+end
+
 Markify.new

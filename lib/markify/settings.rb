@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module Markify::Settings
 
   DEFAULT_CONFIG_PATH = Pathname(ENV['HOME'] + "/markify/config.yml")
