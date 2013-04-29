@@ -7,7 +7,7 @@ class Markify::Mark
   def initialize(name, id, mark, passed, try, date)
     @name   = name
     @id     = id.to_i
-    @mark   = mark.to_i
+    @mark   = mark.to_f
     @passed = passed
     @try    = try.to_i
     @date   = Date.strptime(date, '%d.%m.%Y')
