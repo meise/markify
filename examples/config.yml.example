@@ -5,10 +5,8 @@ sis:
 xmpp:
   bot_id:
   bot_password:
-  reseivers: ['']
+  recipients: ['']
 
 general:
   verbose: false
-
-database:
-  hashes: "/home/foobaz/markify/hashes.txt"
+  database_file: "/home/foobaz/markify/hashes.txt"
