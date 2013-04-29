@@ -2,17 +2,17 @@
 
 class Markify::Database
 
-  attr_reader = :checksums, :path
+  attr_reader :file_path
 
   def initialize(path = nil)
     @file_path = path || Pathname(ENV['HOME'] + '/markify/hashes.txt')
-    @checksums = read_checksums
+    @checksums = read_checksum_file
   end
 
   def check_for_new_marks(marks)
     new_marks = marks.clone
 
-    read_checksums.each do |line|
+    read_checksum_file.each do |line|
       marks.each do |mark|
         if mark.hash.match(line)
           new_marks.delete(mark)
@@ -29,6 +29,16 @@ class Markify::Database
     end
   end
 
+  def checksums
+    checksums = read_checksum_file
+
+    checksums.each do |checksum|
+      if checksum.match(/#/)
+        checksums.delete(checksum)
+      end
+    end
+  end
+
   protected
 
   def create_checksum_file
@@ -41,7 +51,7 @@ class Markify::Database
     end
   end
 
-  def read_checksums
+  def read_checksum_file
     hashes = []
 
     if @file_path.exist?
