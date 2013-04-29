@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-class Markify
+module Markify
 
   VERSION = '0.0.1'
   NAME    = 'markify'
@@ -17,5 +17,8 @@ DESCRIPTION
 Released under the GNU GENERAL PUBLIC LICENSE Version 3. © Daniel Meißner, 2013
 LICENCE
 
+  SUMMARY =<<SUMMARY
+Mark notify script for the Studierendeninformationssystem (SIS) of the University of Applied Sciences Bonn-Rhein-Sieg.
+SUMMARY
 
 end
