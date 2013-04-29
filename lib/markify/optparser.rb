@@ -19,8 +19,8 @@ module Markify::OptParser
       opts.separator ""
       opts.separator "Optional options:"
 
-      opts.on("-f", "--config-file FILE", "Config file (default: ~/markify/config.yml)") do |file|
-        options[:config_file] = Pathname(file)
+      opts.on('-s', '--send', 'Send xmpp messages') do |s|
+        options[:send] = s
       end
 
       opts.on('-n', '--noop', 'No operation, only stout output') do |n|
@@ -29,6 +29,12 @@ module Markify::OptParser
 
       opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
         options[:verbose] = v
+      end
+
+      opts.separator ""
+
+      opts.on("-f", "--config-file FILE", "Config file (default: ~/markify/config.yml)") do |file|
+        options[:config_file] = Pathname(file)
       end
 
       opts.separator ''
@@ -42,13 +48,13 @@ module Markify::OptParser
         end
       end
 
-      opts.on_tail('--version', 'Show version inforamtion') do
-        puts Markify::LICENCE
+      opts.on_tail('-h', '--help', 'Show this message') do
+        puts opts
         exit
       end
 
-      opts.on_tail('-h', '--help', 'Show this message') do
-        puts opts
+      opts.on_tail('--version', 'Show version inforamtion') do
+        puts Markify::LICENCE
         exit
       end
 
