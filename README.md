@@ -1,29 +1,40 @@
 # Markify
 
-TODO: Write a gem description
+Markify is ruby Script to detect new marks in the
+Studierendeninformationssystem (SIS) of the University of Applied Sciences
+Bonn-Rhein-Sieg. If markify detects new marks, they will send you a xmpp
+message for every change.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'markify'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
+Install Markify via rubygems:
 
     $ gem install markify
 
 ## Usage
 
-TODO: Write usage instructions here
+To create the initial markify configuration run:
 
-## Contributing
+    $ markify --init
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+The default configuration path is ``/home/$user/markify/config.yml``. You have to add your SIS and xmpp login data.
+
+Possible options to run markify:
+
+    $ markify [options]
+
+    Optional options:
+        -s, --send                       Send xmpp messages
+        -n, --noop                       No operation, only stout output
+        -v, --[no-]verbose               Run verbosely
+
+        -f, --config-file FILE           Config file (default: ~/markify/config.yml)
+
+    Common options:
+            --init                       Create example configuration
+        -h, --help                       Show this message
+            --version                    Show version inforamtion
+
+## License
+
+Released under the GNU GENERAL PUBLIC LICENSE Version 3. © Daniel Meißner, 2013
