@@ -15,20 +15,30 @@ class Markify::Scraper
     @sis[:login_password] = login_password
 
     @marks = []
+  end
 
+  def scrape!
     scrape
   end
 
-  def scrape
-    scrape!
+  def test_login
+    login_page = @agent.get(@sis[:login_page])
+    error_page = sis_login(@sis[:login_name], @sis[:login_password], login_page)
+
+    if error_page.search(".//*[@id='inhalt']/table/tbody/tr/td/form/center/table/tr[3]/td").text =~
+        /Benutzername unbekannt oder falsches Kennwort eingegeben!/
+      puts "SIS: Username and password wrong."
+    else
+      puts "SIS: Login works."
+    end
   end
 
   protected
 
-  def scrape!
-    page = @agent.get(@sis[:login_page])
+  def scrape
+    login_page = @agent.get(@sis[:login_page])
 
-    first_sis_page = sis_login(@sis[:login_name], @sis[:login_password], page)
+    first_sis_page = sis_login(@sis[:login_name], @sis[:login_password], login_page)
     marks_table    = get_marks_table(first_sis_page)
 
     get_marks(marks_table)

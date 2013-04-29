@@ -52,6 +52,20 @@ CONTENT
     end
   end
 
+  def self.test_settings(config)
+    Markify::Scraper.new(config['sis']['login_name'], config['sis']['login_password']).test_login
+
+    begin
+      Markify::Bot.new(config['xmpp']['bot_id'],
+                     config['xmpp']['bot_password']).send_message(config['xmpp']['recipients'],
+                                                                 "#{Markify::NAME} Test #{Time.now}")
+    rescue Jabber::ClientAuthenticationFailure
+      puts "XMPP: Bot authentication failed."
+    else
+      puts "XMPP: Bot works."
+    end
+  end
+
   protected
 
   def self.validate(config)

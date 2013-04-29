@@ -48,6 +48,10 @@ module Markify::OptParser
         end
       end
 
+      opts.on_tail('--test', 'Test configuration and accounts') do
+        options[:test] = true
+      end
+
       opts.on_tail('-h', '--help', 'Show this message') do
         puts opts
         exit

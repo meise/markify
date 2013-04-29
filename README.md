@@ -32,6 +32,7 @@ Possible options to run markify:
 
     Common options:
             --init                       Create example configuration
+            --test                       Test configuration and accounts
         -h, --help                       Show this message
             --version                    Show version inforamtion
 
