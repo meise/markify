@@ -38,11 +38,19 @@ class Markify::Scraper
     marks_table.each do |m|
       mark = m.search('./td')
 
+      # use only lines with a id
       unless mark[0].text =~ /\d{4,5}/
         next
       end
 
-      @marks << Markify::Mark.new(mark[1].text, mark[0].text, mark[4].text, mark[7].text, mark[8].text, mark[12].text)
+      @marks << Markify::Mark.new(
+          mark[1].text, # curse name
+          mark[0].text, # id
+          mark[4].text, # mark
+          mark[7].text, # passed
+          mark[8].text, # try
+          mark[12].text # date
+      )
     end
 
     @marks
