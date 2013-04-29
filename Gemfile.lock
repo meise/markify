@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    markify (0.0.1)
+    markify (0.1.0)
       mechanize (~> 2.5.1)
       xmpp4r (~> 0.5)
 
