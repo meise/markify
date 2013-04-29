@@ -25,7 +25,7 @@ Possible options to run markify:
 
     Optional options:
         -s, --send                       Send xmpp messages
-        -n, --noop                       No operation, only stout output
+        -n, --noop                       No operation, only stdout output
         -v, --[no-]verbose               Run verbosely
 
         -f, --config-file FILE           Config file (default: ~/markify/config.yml)

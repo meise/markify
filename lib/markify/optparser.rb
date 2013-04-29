@@ -41,7 +41,7 @@ module Markify::OptParser
         options[:send] = s
       end
 
-      opts.on('-n', '--noop', 'No operation, only stout output') do |n|
+      opts.on('-n', '--noop', 'No operation, only stdout output') do |n|
         options[:noop] = n
       end
 
