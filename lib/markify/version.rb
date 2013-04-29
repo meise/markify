@@ -6,7 +6,7 @@ module Markify
   NAME    = 'markify'
 
   DESCRIPTION =<<DESCRIPTION
-#{Markify::NAME.capitalize} is ruby Script to detect new marks in the
+#{Markify::NAME.capitalize} is a ruby script to detect new marks in the
 Studierendeninformationssystem (SIS) of the University of Applied Sciences
 Bonn-Rhein-Sieg. If #{Markify::NAME} detects new marks, they will send you a xmpp
 message for every change.

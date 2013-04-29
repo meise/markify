@@ -1,6 +1,6 @@
 # Markify
 
-Markify is ruby Script to detect new marks in the
+Markify is a ruby script to detect new marks in the
 Studierendeninformationssystem (SIS) of the University of Applied Sciences
 Bonn-Rhein-Sieg. If markify detects new marks, they will send you a xmpp
 message for every change.
