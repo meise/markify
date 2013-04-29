@@ -10,7 +10,8 @@ module Markify::Settings
     config_file = file || DEFAULT_CONFIG_PATH
 
     if config_file.exist?
-      YAML::load_file(config_file)
+      config = YAML::load_file(config_file)
+      validate(config)
     else
       puts 'Config file does not exist. Please create it.'
       puts "  $ #{$0} --init"
@@ -37,13 +38,11 @@ xmpp:
   bot_id: "bot@foo.baz.er"
   bot_password: "möpmöp"
 
-  recipients: bla@jabber.foo.baz, müp@möp.blap.ba
+  recipients: [bla@jabber.foo.baz, müp@möp.blap.ba]
 
 general:
   verbose: false
-
-database:
-  hashes: "#{ENV['HOME'] + '/markify/hashes.txt'}"
+  database_file: "#{ENV['HOME'] + '/markify/hashes.txt'}"
 CONTENT
       end
 
@@ -51,5 +50,20 @@ CONTENT
 
       exit
     end
+  end
+
+  protected
+
+  def self.validate(config)
+    # convert recipients to an array
+    if config['xmpp']['recipients'].is_a?(String)
+      config['xmpp']['recipients'] = [ config['xmpp']['recipients'] ]
+    end
+
+    unless config['general']['database_file'].nil?
+      config['general']['database_file'] = Pathname(config['general']['database_file'])
+    end
+
+    config
   end
 end
