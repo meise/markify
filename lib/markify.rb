@@ -9,14 +9,13 @@ require "markify/database"
 require "markify/bot"
 require "markify/settings"
 require "markify/optparser"
+require 'markify/mark'
 
-class Markify
+module Markify
 
-  attr_reader :config, :options
-
-  def initialize
+  def self.run!
     @options      = Markify::OptParser.parse!
-    @config       = Markify::Settings.load!(options[:config_file])
+    @config       = Markify::Settings.load!(@options[:config_file])
     mark_database = Markify::Database.new
 
     all_marks = Markify::Scraper.new(@config['sis']['login_name'], @config['sis']['login_password']).marks
@@ -31,7 +30,7 @@ class Markify
 
     new_marks.sort_by{|mark| mark.date}.each do |mark|
       unless @options[:noop]
-        bot.send_message(@config['xmpp']['recipients'], mark.to_s)
+        bot.send_message(@config['xmpp']['recipients'], mark.to_s) if @options[:send]
         mark_database.write_checksum(mark.hash)
       end
 

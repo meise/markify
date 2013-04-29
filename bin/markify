@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# encoding: utf-8
 
 begin
   require 'markify'
@@ -10,4 +11,4 @@ rescue LoadError
   end
 end
 
-Markify.new
+Markify.run!
