@@ -15,23 +15,23 @@ Install Markify via rubygems:
 
 1. Create the initial markify configuration.
 
-    $ markify --init
+        $ markify --init
 
 2. Add your SIS and xmpp login data to your configuration. Default path ``$HOME/markify/config.yml``.
 
 3. Test your configuration
 
-    $ markify --test
+        $ markify --test
 
 4. Run markify to create hash database and insert all known marks.
 
-    $ markify -v
+        $ markify -v
 
 5. Configure cron job to run markify every hour.
 
-    $ crontab -e
+        $ crontab -e
 
-    @hourly markify -s
+        @hourly /usr/local/bin/bash -c "/usr/local/bin/markify -s"
 
 Possible options to run markify:
 
