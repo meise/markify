@@ -27,6 +27,9 @@ module Markify::Scraper
 
     def initialize(login_name, login_password, sis_login_page)
       @agent = Mechanize.new
+      original, library = */(.*) \(.*\)$/.match(@agent.user_agent)
+      @agent.user_agent =
+          "#{Markify::NAME.capitalize}/#{Markify::VERSION} #{library} (https://github.com/meise/markify)"
 
       @data                  = {}
       @data[:login_page]     = sis_login_page
