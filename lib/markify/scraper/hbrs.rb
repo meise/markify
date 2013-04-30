@@ -33,9 +33,9 @@ class Markify::Scraper::Hbrs < Markify::Scraper::Base
 
     if error_page.search(".//*[@id='inhalt']/table/tbody/tr/td/form/center/table/tr[3]/td").text =~
         /Benutzername unbekannt oder falsches Kennwort eingegeben!/
-      puts "SIS: Username and password wrong."
+      puts "Scraper: Username and password wrong."
     else
-      puts "SIS: Login works."
+      puts "Scraper: Login works."
     end
   end
 

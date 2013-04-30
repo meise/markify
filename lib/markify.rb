@@ -37,20 +37,30 @@ module Markify
   def self.run!
     @options      = Markify::OptParser.parse!
     @config       = Markify::Settings.load!(@options[:config_file])
-
-    if @options[:test]
-      Markify::Settings.test_settings(@config)
-      exit
-    end
+    @scraper      = nil
 
     mark_database = Markify::Database.new(@config['general']['database_file'])
 
-    all_marks = Markify::Scraper::Hbrs.new(@config['sis']['login_name'], @config['sis']['login_password']).scrape!
+    case @config['university']['acronym'].downcase
+      when /hbrs/
+        @scraper = Markify::Scraper::Hbrs.new(@config['university']['login_name'],
+                                              @config['university']['login_password'])
+      else
+        puts 'No support for your university.'
+        exit
+    end
+
+    if @options[:test]
+      Markify::Settings.test_settings(@config, @scraper)
+      exit
+    end
+
+    all_marks = @scraper.scrape!
     new_marks = mark_database.check_for_new_marks(all_marks)
 
     if new_marks.count == 0 && (@config['general']['verbose'] || @options[:noop])
       puts "No new marks."
-      exit
+      exit 0
     end
 
     bot = Markify::Bot.new(@config['xmpp']['bot_id'], @config['xmpp']['bot_password']) if @options[:send]

@@ -48,7 +48,8 @@ module Markify::Settings
 
       File.open(config_file, 'a+', 0600) do |file|
         file.puts <<CONTENT
-sis:
+university:
+  acronym: hbrs
   login_name: "foobaz2s"
   login_password: "fnord2000"
 
@@ -70,8 +71,8 @@ CONTENT
     end
   end
 
-  def self.test_settings(config)
-    Markify::Scraper::Hbrs.new(config['sis']['login_name'], config['sis']['login_password']).test_login
+  def self.test_settings(config, scraper)
+    scraper.test_login
 
     begin
       Markify::Bot.new(config['xmpp']['bot_id'],
