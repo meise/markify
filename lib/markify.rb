@@ -24,12 +24,13 @@ require 'yaml'
 require 'pathname'
 
 require "markify/version"
-require "markify/scraper"
 require "markify/database"
 require "markify/bot"
 require "markify/settings"
 require "markify/optparser"
 require 'markify/mark'
+require 'markify/scraper/base'
+require 'markify/scraper/hbrs'
 
 module Markify
 
@@ -44,7 +45,7 @@ module Markify
 
     mark_database = Markify::Database.new(@config['general']['database_file'])
 
-    all_marks = Markify::Scraper.new(@config['sis']['login_name'], @config['sis']['login_password']).scrape!
+    all_marks = Markify::Scraper::Hbrs.new(@config['sis']['login_name'], @config['sis']['login_password']).scrape!
     new_marks = mark_database.check_for_new_marks(all_marks)
 
     if new_marks.count == 0 && (@config['general']['verbose'] || @options[:noop])

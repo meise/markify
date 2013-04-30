@@ -18,30 +18,18 @@ You should have received a copy of the GNU General Public License
 along with Markify. If not, see <http://www.gnu.org/licenses/>.
 =end
 
-require 'mechanize'
+class Markify::Scraper::Hbrs < Markify::Scraper::Base
 
-class Markify::Scraper
-
-  attr_reader :marks
-
-  def initialize(login_name, login_password, sis_login_page = nil)
-    @agent = Mechanize.new
-
-    @sis                  = {}
-    @sis[:login_page]     = sis_login_page || 'https://dias.fh-bonn-rhein-sieg.de/d3/SISEgo.asp?UserAcc=Gast&DokID=DiasSWeb&ADias2Dction=Login'
-    @sis[:login_name]     = login_name
-    @sis[:login_password] = login_password
-
-    @marks = []
-  end
-
-  def scrape!
-    scrape
+  def initialize(login_name, login_password)
+    super(login_name,
+          login_password,
+          'https://dias.fh-bonn-rhein-sieg.de/d3/SISEgo.asp?UserAcc=Gast&DokID=DiasSWeb&ADias2Dction=Login'
+    )
   end
 
   def test_login
-    login_page = @agent.get(@sis[:login_page])
-    error_page = sis_login(@sis[:login_name], @sis[:login_password], login_page)
+    login_page = @agent.get(@data[:login_page])
+    error_page = sis_login(@data[:login_name], @data[:login_password], login_page)
 
     if error_page.search(".//*[@id='inhalt']/table/tbody/tr/td/form/center/table/tr[3]/td").text =~
         /Benutzername unbekannt oder falsches Kennwort eingegeben!/
@@ -54,9 +42,9 @@ class Markify::Scraper
   protected
 
   def scrape
-    login_page = @agent.get(@sis[:login_page])
+    login_page = @agent.get(@data[:login_page])
 
-    first_sis_page = sis_login(@sis[:login_name], @sis[:login_password], login_page)
+    first_sis_page = sis_login(@data[:login_name], @data[:login_password], login_page)
     marks_table    = get_marks_table(first_sis_page)
 
     get_marks(marks_table)

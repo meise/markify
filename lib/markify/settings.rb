@@ -71,7 +71,7 @@ CONTENT
   end
 
   def self.test_settings(config)
-    Markify::Scraper.new(config['sis']['login_name'], config['sis']['login_password']).test_login
+    Markify::Scraper::Hbrs.new(config['sis']['login_name'], config['sis']['login_password']).test_login
 
     begin
       Markify::Bot.new(config['xmpp']['bot_id'],
