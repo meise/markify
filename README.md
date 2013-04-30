@@ -1,8 +1,8 @@
 # Markify
 
 Markify is a ruby script to detect new marks in the
-Studierendeninformationssystem (SIS) of the University of Applied Sciences
-Bonn-Rhein-Sieg. If markify detects new marks, they will send you a xmpp
+[Studierendeninformationssystem](http://sis.fh-bonn-rhein-sieg.de) (SIS) of the [University of Applied Sciences
+Bonn-Rhein-Sieg](http://h-brs.de). If markify detects new marks, they will send you a xmpp
 message for every change.
 
 ## Installation
