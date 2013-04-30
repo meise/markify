@@ -59,6 +59,10 @@ class Markify::Scraper::Hbrs < Markify::Scraper::Base
         next
       end
 
+      if mark[7].text =~ /AN/
+        next
+      end
+
       @marks << Markify::Mark.new(
           mark[1].text, # curse name
           mark[0].text, # id
