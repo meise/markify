@@ -1,7 +1,7 @@
 university:
   acronym:
   login_name:
-  password:
+  login_password:
 
 xmpp:
   bot_id:
