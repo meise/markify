@@ -37,7 +37,7 @@ module Markify::OptParser
       opts.separator ""
       opts.separator "Optional options:"
 
-      opts.on('-s', '--send', 'Send xmpp messages') do |s|
+      opts.on('-s', '--send', 'Send XMPP messages') do |s|
         options[:send] = s
       end
 
@@ -75,7 +75,7 @@ module Markify::OptParser
         exit
       end
 
-      opts.on_tail('--version', 'Show version inforamtion') do
+      opts.on_tail('--version', 'Show version information') do
         puts Markify::LICENCE
         exit
       end
