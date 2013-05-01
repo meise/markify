@@ -20,14 +20,13 @@ along with Markify. If not, see <http://www.gnu.org/licenses/>.
 
 module Markify
 
-  VERSION = '0.1.0'
+  VERSION = '0.2.0'
   NAME    = 'markify'
 
   DESCRIPTION =<<DESCRIPTION
-#{Markify::NAME.capitalize} is a ruby script to detect new marks in the
-Studierendeninformationssystem (SIS) of the University of Applied Sciences
-Bonn-Rhein-Sieg. If #{Markify::NAME} detects new marks, they will send you a xmpp
-message for every change.
+#{Markify::NAME.capitalize} is a ruby script to detect new marks or course assessments in the student
+information system of your university. If #{Markify::NAME} detects new marks, they will send you a XMPP message for
+every change. Supported universities: University of Applied Sciences Bonn-Rhein-Sieg.
 DESCRIPTION
 
   LICENCE =<<LICENCE
@@ -36,7 +35,7 @@ Released under the GNU GENERAL PUBLIC LICENSE Version 3. © Daniel Meißner, 201
 LICENCE
 
   SUMMARY =<<SUMMARY
-Mark notify script for the Studierendeninformationssystem (SIS) of the University of Applied Sciences Bonn-Rhein-Sieg.
+Mark notify script for different universities.
 SUMMARY
 
 end
