@@ -20,7 +20,7 @@ along with Markify. If not, see <http://www.gnu.org/licenses/>.
 
 module Markify
 
-  VERSION = '0.2.0'
+  VERSION = '0.2.1'
   NAME    = 'markify'
 
   DESCRIPTION =<<DESCRIPTION
