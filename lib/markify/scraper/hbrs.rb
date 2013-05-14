@@ -44,7 +44,13 @@ class Markify::Scraper::Hbrs < Markify::Scraper::Base
   def scrape
     login_page = @agent.get(@data[:login_page])
 
-    first_sis_page = sis_login(@data[:login_name], @data[:login_password], login_page)
+    begin
+      first_sis_page = sis_login(@data[:login_name], @data[:login_password], login_page)
+    rescue NoMethodError
+      puts "Error: SIS scraper error."
+      exit 0
+    end
+
     marks_table    = get_marks_table(first_sis_page)
 
     get_marks(marks_table)
