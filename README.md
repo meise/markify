@@ -48,7 +48,7 @@ Install Markify via rubygems:
 
         $ crontab -e
 
-        @hourly /usr/local/bin/bash -c "/usr/local/bin/markify -s"
+        @hourly /usr/local/bin/bash -c "/usr/local/bin/markify -s" 1>/dev/null
 
 Possible options to run markify:
 
