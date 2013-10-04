@@ -63,7 +63,8 @@ module Markify
       exit 0
     end
 
-    bot = Markify::Bot.new(@config['xmpp']['bot_id'], @config['xmpp']['bot_password']) if @options[:send]
+    bot = Markify::Bot.new(@config['xmpp']['bot_id'], @config['xmpp']['bot_password']) if @options[:send] &&
+                                                                                          new_marks.count > 0
 
     new_marks.sort_by{|mark| mark.date}.each do |mark|
       unless @options[:noop]
