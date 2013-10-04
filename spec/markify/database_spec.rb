@@ -37,12 +37,14 @@ HASHES
     @database.file_path.delete
   end
 
-  it "should set default database path" do
-    @database.file_path.should_not eq(nil)
-  end
+  describe '#initialize' do
+    it "should set default database path" do
+      @database.file_path.should_not eq(nil)
+    end
 
-  it "should set database path" do
-    @database.file_path.should eq(Pathname('/tmp/markify_hashes.txt'))
+    it "should set database path" do
+      @database.file_path.should eq(Pathname('/tmp/markify_hashes.txt'))
+    end
   end
 
   describe "#check_for_new_marks" do
@@ -52,6 +54,14 @@ HASHES
       mark3 = Markify::Mark.new('Peter Lustig', '2323', '5.0', 'NB', '1', '24.09.1923')
 
       @database.check_for_new_marks([mark1, mark2, mark3]).should eq([mark3])
+    end
+  end
+
+  describe "#write_checksum" do
+    it 'should write a checksum at the end of database file' do
+      @database.write_checksum('01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b')
+
+      File.readlines(@database.file_path).last.chomp.should eq '01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b'
     end
   end
 

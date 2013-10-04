@@ -21,32 +21,34 @@ along with Markify. If not, see <http://www.gnu.org/licenses/>.
 require 'spec_helper'
 
 describe Markify::Mark do
-  before do
+  before(:each) do
     @mark = Markify::Mark.new('Peter Lustig', '2342', '3.0', 'BE', '2', '23.02.1942')
   end
 
-  it "should be a string" do
-    @mark.name.should == "Peter Lustig"
-  end
+  describe '#initialize' do
+    it "should be a string" do
+      @mark.name.should == "Peter Lustig"
+    end
 
-  it "should be a integer" do
-    @mark.id.should == 2342
-  end
+    it "should be a integer" do
+      @mark.id.should == 2342
+    end
 
-  it "should be a float" do
-    @mark.mark.should == 3.0
-  end
+    it "should be a float" do
+      @mark.mark.should == 3.0
+    end
 
-  it "should be a string" do
-    @mark.passed.should == "BE"
-  end
+    it "should be a string" do
+      @mark.passed.should == "BE"
+    end
 
-  it "should be a date" do
-    @mark.date.should == Date.strptime("23.02.1942", '%d.%m.%Y')
-  end
+    it "should be a date" do
+      @mark.date.should == Date.strptime("23.02.1942", '%d.%m.%Y')
+    end
 
-  it "should be a integer" do
-    @mark.try.should == 2
+    it "should be a integer" do
+      @mark.try.should == 2
+    end
   end
 
   describe "#to_s" do
