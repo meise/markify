@@ -51,7 +51,7 @@ class Markify::Scraper::Hbrs < Markify::Scraper::Base
       exit 0
     end
 
-    marks_table    = get_marks_table(first_sis_page)
+    marks_table = get_marks_table(first_sis_page)
 
     get_marks(marks_table)
   end
