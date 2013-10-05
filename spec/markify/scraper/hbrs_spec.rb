@@ -24,4 +24,57 @@ describe Markify::Scraper::Hbrs do
   before do
     @scraper_hbrs = Markify::Scraper::Hbrs.new("foobar", "möp")
   end
+
+  describe '#initialize' do
+    it 'should create an scraper object for hbrs university' do
+      pending
+    end
+  end
+
+  describe '#test_login' do
+    it 'should return a string when password or username is wrong' do
+      pending
+    end
+
+    it 'should return a string when login works' do
+      pending
+    end
+  end
+
+  context 'protected' do
+    describe '#get_marks' do
+      it 'should return a array with marks' do
+        pending
+      end
+
+      it 'should pass the right columns into mark objects' do
+        pending
+      end
+
+      it 'should ignore rows without an id consist of 4-5 numbers' do
+        pending
+      end
+
+      it "should ignore passed status AN for 'angemeldet'" do
+        pending
+      end
+    end
+
+    describe '#get_marks_table' do
+      it 'should return a mechanize html table' do
+        pending
+      end
+
+      it 'should terminate if the right table is not found' do
+        pending
+      end
+    end
+
+    describe '#sis_login' do
+      it 'should return a mechanize page' do
+        pending
+      end
+    end
+  end
+
 end
