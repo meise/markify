@@ -26,28 +26,30 @@ describe Markify::Mark do
   end
 
   describe '#initialize' do
-    it "should be a string" do
-      @mark.name.should == "Peter Lustig"
-    end
+    context "getter" do
+      it ".name should return a string" do
+        @mark.name.should == "Peter Lustig"
+      end
 
-    it "should be a integer" do
-      @mark.id.should == 2342
-    end
+      it ".id should return an integer number" do
+        @mark.id.should == 2342
+      end
 
-    it "should be a float" do
-      @mark.mark.should == 3.0
-    end
+      it ".mark should return a float number" do
+        @mark.mark.should == 3.0
+      end
 
-    it "should be a string" do
-      @mark.passed.should == "BE"
-    end
+      it ".passed should return a string" do # nope, it should return a boolean
+        @mark.passed.should == "BE"
+      end
 
-    it "should be a date" do
-      @mark.date.should == Date.strptime("23.02.1942", '%d.%m.%Y')
-    end
+      it ".date should return a date" do
+        @mark.date.should == Date.strptime("23.02.1942", '%d.%m.%Y')
+      end
 
-    it "should be a integer" do
-      @mark.try.should == 2
+      it ".try should return a integer" do
+        @mark.try.should == 2
+      end
     end
   end
 
