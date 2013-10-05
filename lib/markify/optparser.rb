@@ -22,7 +22,8 @@ require 'optparse'
 
 module Markify::OptParser
 
-  def self.parse!
+  def self.parse!(argv = nil || ARGV)
+    @argv = argv
     parse
   end
 
@@ -80,7 +81,7 @@ module Markify::OptParser
         exit
       end
 
-      if ARGV.size == 0
+      if @argv.size == 0
         puts Markify::DESCRIPTION
         puts
         puts opts
@@ -89,7 +90,7 @@ module Markify::OptParser
 
         exit
       end
-    end.parse!
+    end.parse!(@argv)
 
     options
   end
