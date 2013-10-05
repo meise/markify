@@ -22,7 +22,10 @@ require 'spec_helper'
 
 describe Markify::Database do
   before(:each) do
-    File.open(Pathname('/tmp/markify_hashes.txt'), "a+") do |file|
+    @gem_root = File.expand_path('../../..', __FILE__)
+    @hash_database = Pathname(@gem_root) + 'tmp/markify_hashes.txt'
+
+    File.open(Pathname(@hash_database), "a+") do |file|
       file.puts <<HASHES
 # markify hash database
 19189e4668008cd48265538054282379c38bc7422811e4402a7f1e693138a579
@@ -30,11 +33,13 @@ describe Markify::Database do
 HASHES
     end
 
-    @database = Markify::Database.new(Pathname('/tmp/markify_hashes.txt'))
+    @database = Markify::Database.new(@hash_database)
   end
 
   after(:each) do
-    @database.file_path.delete
+    Dir[ @hash_database.dirname + '**/*' ].each do |file|
+      File.delete(file)
+    end
   end
 
   describe '#initialize' do
@@ -43,7 +48,7 @@ HASHES
     end
 
     it "should set database path" do
-      @database.file_path.should eq(Pathname('/tmp/markify_hashes.txt'))
+      @database.file_path.should eq(@hash_database)
     end
   end
 
@@ -77,7 +82,7 @@ HASHES
       @database.protected_methods.include?(:read_checksum_file).should eq(true)
     end
 
-    it "should hash file and return array for each line" do
+    it "should read hash file and return an array with entries for each line" do
       @database.send(:read_checksum_file,
                      *Markify::Database.protected_methods).should eq(['# markify hash database',
                                                                       '19189e4668008cd48265538054282379c38bc7422811e4402a7f1e693138a579',
@@ -90,8 +95,16 @@ HASHES
       @database.protected_methods.include?(:create_checksum_file).should eq(true)
     end
 
-    it "should create new hash database if no exist" do
-      # TODO
+    it "should create new hash database if no one exist" do
+      database = Pathname(@hash_database.to_s + 'do_not_exist')
+
+      database.exist?.should be false
+      Markify::Database.new(database)
+      database.exist?.should be true
+    end
+
+    it 'should create directory path' do
+      pending
     end
   end
 end
