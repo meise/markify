@@ -31,6 +31,8 @@ module Markify::Scraper
       @agent.user_agent =
           "#{Markify::NAME.capitalize}/#{Markify::VERSION} #{library} (https://github.com/meise/markify)"
 
+      @agent.ca_file = '/usr/local/share/certs/ca-root-nss.crt' if `uname` =~ /FreeBSD/
+
       @data                  = {}
       @data[:login_page]     = sis_login_page
       @data[:login_name]     = login_name
