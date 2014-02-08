@@ -21,6 +21,7 @@ along with Markify. If not, see <http://www.gnu.org/licenses/>.
 require 'spec_helper'
 
 describe Markify::Mark do
+
   before(:each) do
     @mark = Markify::Mark.new('Peter Lustig', '2342', '3.0', 'BE', '2', '23.02.1942')
   end
