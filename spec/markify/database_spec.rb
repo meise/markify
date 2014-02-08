@@ -104,6 +104,8 @@ HASHES
     end
 
     it 'should create directory path' do
+      pending("directory path creation is not yet implemented")
+
       database = Pathname( @hash_database.dirname + 'magic_dir/' + 'fnord_2000' )
 
       database.basename.exist?.should be false

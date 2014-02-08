@@ -27,13 +27,16 @@ describe Markify::Scraper::Hbrs do
 
   describe '#initialize' do
     it 'should create an scraper object for hbrs university' do
-      pending
+      @scraper_hbrs.should be_a_kind_of(Markify::Scraper::Base)
+      @scraper_hbrs.should be_an_instance_of(Markify::Scraper::Hbrs)
     end
   end
 
   describe '#test_login' do
     it 'should return a string when password or username is wrong' do
-      pending
+      capture_stdout {
+        @scraper_hbrs.test_login
+      }.should match /wrong/
     end
 
     it 'should return a string when login works' do
@@ -55,7 +58,7 @@ describe Markify::Scraper::Hbrs do
         pending
       end
 
-      it "should ignore passed status AN for 'angemeldet'" do
+      it "should ignore passed status AN ('angemeldet')" do
         pending
       end
     end
