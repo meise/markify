@@ -23,7 +23,9 @@ require 'spec_helper'
 describe Markify::Database do
   before(:each) do
     @gem_root = File.expand_path('../../..', __FILE__)
-    @hash_database = Pathname(@gem_root) + 'tmp/markify_hashes.txt'
+    @tmp_path = Pathname(@gem_root + '/tmp')
+    @tmp_path.mkdir
+    @hash_database = Pathname(@tmp_path + 'markify_hashes.txt')
 
     File.open(Pathname(@hash_database), "a+") do |file|
       file.puts <<HASHES
@@ -37,9 +39,7 @@ HASHES
   end
 
   after(:each) do
-    Dir[ @hash_database.dirname + '**/*' ].each do |file|
-      File.delete(file)
-    end
+    FileUtils.rm_rf(@tmp_path)
   end
 
   describe '#initialize' do
@@ -104,7 +104,11 @@ HASHES
     end
 
     it 'should create directory path' do
-      pending
+      database = Pathname( @hash_database.dirname + 'magic_dir/' + 'fnord_2000' )
+
+      database.basename.exist?.should be false
+      Markify::Database.new(database)
+      database.basename.exist?.should be true
     end
   end
 end

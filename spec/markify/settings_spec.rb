@@ -24,10 +24,12 @@ describe Markify::Settings do
 
   before(:each) do
     @gem_root = File.expand_path('../../..', __FILE__)
+    @tmp_path = Pathname(@gem_root + '/tmp')
+    @tmp_path.mkdir
     @config_file_path = Pathname(@gem_root) + 'examples/config.yml.example'
-    @example_config_path = Pathname(@gem_root) + 'tmp/config.yml'
+    @example_config_path = Pathname(@tmp_path) + 'config.yml'
 
-    @example_config = Pathname(@gem_root) + 'tmp/config.yml.example'
+    @example_config = Pathname(@tmp_path) + 'config.yml.example'
     File.open(@example_config, 'a+', 0600) do |file|
       file.puts <<CONTENT
 xmpp:
@@ -40,9 +42,7 @@ CONTENT
   end
 
   after(:each) do
-    Dir[ @example_config_path.dirname + '**/*' ].each do |file|
-      File.delete(file)
-    end
+    FileUtils.rm_rf(@tmp_path)
   end
 
   describe '.load!' do
